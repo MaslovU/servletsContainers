@@ -4,12 +4,16 @@ import com.maslov.controller.PostController;
 import com.maslov.repository.PostRepository;
 import com.maslov.service.PostService;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public class MainServlet extends HttpServlet {
     private PostController controller;
+    private static final String ENDPOINT_ID = "/api/posts/\\d+";
+    private static final String ENDPOINT = "/api/posts";
 
     @Override
     public void init() {
@@ -19,42 +23,49 @@ public class MainServlet extends HttpServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) {
-        // если деплоились в root context, то достаточно этого
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         try {
-            final var path = req.getRequestURI();
-            final var method = req.getMethod();
-            String endpointId = "/api/posts/\\d+";
-            String endpoint = "/api/posts";
-            String endpointSlash = "/";
-            // primitive routing
-            if (method.equals("GET") && path.equals(endpointSlash)) {
+            var path = req.getRequestURI();
+            if (path.equals(ENDPOINT)) {
                 controller.all(resp);
                 return;
             }
-            if (method.equals("GET") && path.equals(endpoint)) {
-                controller.all(resp);
-                return;
-            }
-            if (method.equals("GET") && path.matches(endpointId)) {
-                // easy way
-                final var id = Long.parseLong(path.substring(path.lastIndexOf("/")));
+            if (path.matches(ENDPOINT_ID)) {
+                var id = Integer.parseInt(path.split("/")[4]);
                 controller.getById(id, resp);
                 return;
             }
-            if (method.equals("POST") && path.equals(endpoint)) {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            var path = req.getRequestURI();
+            if (path.equals(ENDPOINT)) {
                 controller.save(req.getReader(), resp);
                 return;
             }
-            if (method.equals("DELETE") && path.matches(endpointId)) {
-                // easy way
-                final var id = Long.parseLong(path.substring(path.lastIndexOf("/")));
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            var path = req.getRequestURI();
+            if (path.matches(ENDPOINT_ID)) {
+                var id = Integer.parseInt(path.split("/")[4]);
                 controller.removeById(id, resp);
                 return;
             }
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         } catch (Exception e) {
-            e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
