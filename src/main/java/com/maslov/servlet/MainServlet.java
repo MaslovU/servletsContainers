@@ -1,8 +1,7 @@
 package com.maslov.servlet;
 
 import com.maslov.controller.PostController;
-import com.maslov.repository.PostRepository;
-import com.maslov.service.PostService;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,9 +16,8 @@ public class MainServlet extends HttpServlet {
 
     @Override
     public void init() {
-        final var repository = new PostRepository();
-        final var service = new PostService(repository);
-        controller = new PostController(service);
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(com.maslov.Config.class);
+        controller = context.getBean(PostController.class);
     }
 
     @Override

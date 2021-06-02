@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-// Stub
 public class PostRepository {
     private List<Post> postList = new CopyOnWriteArrayList<>();
     private AtomicInteger postID = new AtomicInteger(0);
