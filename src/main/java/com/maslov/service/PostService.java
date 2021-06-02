@@ -3,9 +3,11 @@ package com.maslov.service;
 import com.maslov.exception.NotFoundException;
 import com.maslov.model.Post;
 import com.maslov.repository.PostRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class PostService {
     private final PostRepository repository;
 
