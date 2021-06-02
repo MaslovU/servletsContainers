@@ -3,9 +3,11 @@ package com.maslov.service;
 import com.maslov.exception.NotFoundException;
 import com.maslov.model.Post;
 import com.maslov.repository.PostRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class PostService {
     private final PostRepository repository;
 
@@ -17,7 +19,7 @@ public class PostService {
         return repository.all();
     }
 
-    public Post getById(long id) {
+    public Post getById(int id) {
         return repository.getById(id).orElseThrow(NotFoundException::new);
     }
 
@@ -25,7 +27,7 @@ public class PostService {
         return repository.save(post);
     }
 
-    public void removeById(long id) {
+    public void removeById(int id) {
         repository.removeById(id);
     }
 }
